@@ -14,6 +14,8 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 APP="$DIR/AirPodsGyroHelper.app"
 BIN="$APP/Contents/MacOS/airpods_gyro_bin"
 
+mkdir -p "$APP/Contents/MacOS"
+
 echo ""
 echo "1. Swift バイナリをビルド中..."
 swiftc "$DIR/airpods_gyro_helper.swift" \
