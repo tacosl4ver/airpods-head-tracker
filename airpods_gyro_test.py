@@ -12,7 +12,8 @@ APP    = os.path.join(DIR, "AirPodsGyroHelper.app")
 FIFO   = "/tmp/airpods_gyro.fifo"
 
 if not os.path.isdir(APP):
-    print("AirPodsGyroHelper.app が見つかりません")
+    print("AirPodsGyroHelper.app not found. Run install.sh first.")
+    print("AirPodsGyroHelper.app が見つかりません。先に install.sh を実行してください。")
     sys.exit(1)
 
 # FIFO を準備
@@ -24,9 +25,9 @@ os.mkfifo(FIFO)
 # -n: 常に新しいインスタンス  -g: フォアグラウンドに出さない
 subprocess.Popen(["open", "-n", "-g", APP, "--args", FIFO])
 
-print("AirPodsGyroHelper.app を起動中…")
-print("初回は「モーションデータへのアクセス」許可ダイアログが出ます。")
-print("（FIFO 接続待機中 — アプリ起動後に自動接続します）\n")
+print("Launching AirPodsGyroHelper.app... / AirPodsGyroHelper.app を起動中…")
+print("On first launch, grant 'Motion & Fitness' permission. / 初回は「モーションデータへのアクセス」を許可してください。")
+print("(Waiting for FIFO connection... / FIFO 接続待機中…)\n")
 
 # FIFO を読み込み用に開く（Swift 側が書き込み用に開くまでここでブロック）
 try:
@@ -47,35 +48,35 @@ def make_bar(value, lo, hi):
     return ''.join(bar)
 
 def yaw_label(v):
-    if v < -30:  return "← 左    "
-    if v >  30:  return "右 →    "
-    return              "  正面  "
+    if v < -30:  return "← Left  "
+    if v >  30:  return "Right → "
+    return              " Center "
 
 def pitch_label(v):
-    if v >  15:  return "↑ 上向き"
-    if v < -15:  return "↓ 下向き"
-    return              "  水平  "
+    if v >  15:  return "↑ Up    "
+    if v < -15:  return "↓ Down  "
+    return              " Level  "
 
 def roll_label(v):
-    if v >  15:  return "/ 右傾き"
-    if v < -15:  return "\\ 左傾き"
-    return              "  まっすぐ"
+    if v >  15:  return "/ Tilt R"
+    if v < -15:  return "\\ Tilt L"
+    return              " Straight"
 
 def draw(y, p, r):
     print("\033[H\033[J", end='')
     print("╔══════════════════════════════════════════════════╗")
-    print("║        AirPods Pro ヘッドトラッキング           ║")
+    print("║     AirPods Pro Head Tracking / ヘッドトラッキング ║")
     print("╠══════════════════════════════════════════════════╣")
-    print(f"║  Yaw   (左右): {y:+7.1f}°  {yaw_label(y):<8}                ║")
+    print(f"║  Yaw   (L/R 左右): {y:+7.1f}°  {yaw_label(y):<9}           ║")
     print(f"║  [{make_bar(y, -90, 90)}]  ║")
     print(f"║                                                  ║")
-    print(f"║  Pitch (上下): {p:+7.1f}°  {pitch_label(p):<8}                ║")
+    print(f"║  Pitch (U/D 上下): {p:+7.1f}°  {pitch_label(p):<9}           ║")
     print(f"║  [{make_bar(p, -60, 60)}]  ║")
     print(f"║                                                  ║")
-    print(f"║  Roll  (傾き): {r:+7.1f}°  {roll_label(r):<8}                ║")
+    print(f"║  Roll  (Tilt 傾き): {r:+7.1f}°  {roll_label(r):<9}          ║")
     print(f"║  [{make_bar(r, -60, 60)}]  ║")
     print("╚══════════════════════════════════════════════════╝")
-    print("\n  ※ 起動時の向きが基準 (0°)    Ctrl+C で終了")
+    print("\n  Reference = launch orientation (0°)  /  起動時の向きが基準 (0°)    Ctrl+C to quit / 終了")
 
 try:
     for line in f:
@@ -88,7 +89,7 @@ try:
             continue
 
         if data.get("status") == "unavailable":
-            print("AirPods Pro が接続されていないか未対応です")
+            print("AirPods Pro not connected or unsupported. / AirPods Pro が接続されていないか未対応です。")
             break
 
         draw(data["yaw"], data["pitch"], data["roll"])
@@ -99,4 +100,4 @@ finally:
     f.close()
     if os.path.exists(FIFO):
         os.unlink(FIFO)
-    print("\n\n終了しました")
+    print("\n\nExited. / 終了しました。")

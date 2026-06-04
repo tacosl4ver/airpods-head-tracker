@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
+AirPods Pro Head Tracking → Screen Pointer Visualizer
 AirPods Pro ヘッドトラッキング → 画面ポインタ可視化
+Launch orientation = center reference. Space to reset, Esc to quit.
 起動時の向きがゼロ基準。Space でリセット、Esc で終了。
-ウィンドウはリサイズ可能。
+Window is resizable. / ウィンドウはリサイズ可能。
 """
 
 import json, os, subprocess, threading
@@ -43,7 +45,7 @@ class HeadPointer:
         # ラベル
         self.label = self.canvas.create_text(
             0, 0, anchor='center',
-            text="接続待機中...", fill='#666', font=('Helvetica', 12))
+            text="Connecting... / 接続待機中...", fill='#666', font=('Helvetica', 12))
 
         self.yaw_ref   = None
         self.pitch_ref = None
@@ -80,7 +82,7 @@ class HeadPointer:
     def reset(self):
         self.yaw_ref   = None
         self.pitch_ref = None
-        self.canvas.itemconfig(self.label, text="リセットしました", fill='#ffaa00')
+        self.canvas.itemconfig(self.label, text="Reset / リセットしました", fill='#ffaa00')
 
     def quit(self):
         if os.path.exists(FIFO):
@@ -92,7 +94,7 @@ class HeadPointer:
             self.yaw_ref   = yaw
             self.pitch_ref = pitch
             self.canvas.itemconfig(self.label,
-                text="Space: リセット  /  Esc: 終了", fill='#00ff88')
+                text="Space: Reset / リセット    Esc: Quit / 終了", fill='#00ff88')
 
         dy =  yaw   - self.yaw_ref
         dp =  pitch - self.pitch_ref
@@ -132,7 +134,7 @@ def fifo_reader(pointer):
             continue
         if data.get("status") == "unavailable":
             pointer.root.after(0, pointer.canvas.itemconfig, pointer.label,
-                               {'text': 'AirPods Pro が未接続です', 'fill': '#ff4444'})
+                               {'text': 'AirPods Pro not connected / 未接続', 'fill': '#ff4444'})
             break
         pointer.root.after(0, pointer.update,
                            data["yaw"], data["pitch"], data["roll"])
