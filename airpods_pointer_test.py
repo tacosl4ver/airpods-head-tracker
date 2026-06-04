@@ -7,12 +7,23 @@ Launch orientation = center reference. Space to reset, Esc to quit.
 Window is resizable. / ウィンドウはリサイズ可能。
 """
 
-import json, os, subprocess, threading
+import json, os, signal, subprocess, sys, threading
 import tkinter as tk
 
 DIR  = os.path.dirname(os.path.abspath(__file__))
 APP  = os.path.join(DIR, "AirPodsGyroHelper.app")
 FIFO = "/tmp/airpods_gyro.fifo"
+
+def cleanup(*_):
+    subprocess.run(["pkill", "-f", "airpods_gyro_bin"], capture_output=True)
+    if os.path.exists(FIFO):
+        os.unlink(FIFO)
+
+# 起動時に前回の残骸を掃除 / Clean up leftovers from previous run
+cleanup()
+
+signal.signal(signal.SIGTERM, lambda s, f: (cleanup(), sys.exit(0)))
+signal.signal(signal.SIGHUP,  lambda s, f: (cleanup(), sys.exit(0)))
 
 YAW_RANGE   = 40.0  # ±40° で端まで
 PITCH_RANGE = 25.0  # ±25° で端まで
@@ -85,8 +96,7 @@ class HeadPointer:
         self.canvas.itemconfig(self.label, text="Reset / リセットしました", fill='#ffaa00')
 
     def quit(self):
-        if os.path.exists(FIFO):
-            os.unlink(FIFO)
+        cleanup()
         self.root.quit()
 
     def update(self, yaw, pitch, roll):
@@ -140,8 +150,7 @@ def fifo_reader(pointer):
                            data["yaw"], data["pitch"], data["roll"])
 
     f.close()
-    if os.path.exists(FIFO):
-        os.unlink(FIFO)
+    cleanup()
 
 
 pointer = HeadPointer()

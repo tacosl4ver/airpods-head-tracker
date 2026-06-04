@@ -3,6 +3,7 @@
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -11,14 +12,22 @@ DIR    = os.path.dirname(os.path.abspath(__file__))
 APP    = os.path.join(DIR, "AirPodsGyroHelper.app")
 FIFO   = "/tmp/airpods_gyro.fifo"
 
+def cleanup(*_):
+    subprocess.run(["pkill", "-f", "airpods_gyro_bin"], capture_output=True)
+    if os.path.exists(FIFO):
+        os.unlink(FIFO)
+
+# 起動時に前回の残骸を掃除 / Clean up leftovers from previous run
+cleanup()
+
+signal.signal(signal.SIGTERM, lambda s, f: (cleanup(), sys.exit(0)))
+signal.signal(signal.SIGHUP,  lambda s, f: (cleanup(), sys.exit(0)))
+
 if not os.path.isdir(APP):
     print("AirPodsGyroHelper.app not found. Run install.sh first.")
     print("AirPodsGyroHelper.app が見つかりません。先に install.sh を実行してください。")
     sys.exit(1)
 
-# FIFO を準備
-if os.path.exists(FIFO):
-    os.unlink(FIFO)
 os.mkfifo(FIFO)
 
 # open コマンドで LaunchServices 経由起動（TCC の responsible process が app 自身になる）
@@ -33,7 +42,7 @@ print("(Waiting for FIFO connection... / FIFO 接続待機中…)\n")
 try:
     f = open(FIFO, 'r')
 except KeyboardInterrupt:
-    os.unlink(FIFO)
+    cleanup()
     sys.exit(0)
 
 BAR_W = 43
@@ -98,6 +107,5 @@ except KeyboardInterrupt:
     pass
 finally:
     f.close()
-    if os.path.exists(FIFO):
-        os.unlink(FIFO)
+    cleanup()
     print("\n\nExited. / 終了しました。")
