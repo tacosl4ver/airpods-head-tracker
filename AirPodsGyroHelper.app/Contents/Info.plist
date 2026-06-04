@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.local.airpods-gyro-helper</string>
+    <key>CFBundleExecutable</key>
+    <string>airpods_gyro_bin</string>
+    <key>CFBundleName</key>
+    <string>AirPodsGyroHelper</string>
+    <key>NSMotionUsageDescription</key>
+    <string>AirPods Proのジャイロデータを使って頭の向きを検出します</string>
+</dict>
+</plist>
