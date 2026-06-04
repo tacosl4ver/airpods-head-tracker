@@ -48,8 +48,8 @@ def make_bar(value, lo, hi):
     return ''.join(bar)
 
 def yaw_label(v):
-    if v >  30:  return "← Left  "
-    if v < -30:  return "Right → "
+    if v < -30:  return "← Left  "
+    if v >  30:  return "Right → "
     return              " Center "
 
 def pitch_label(v):
