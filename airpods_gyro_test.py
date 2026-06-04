@@ -57,8 +57,8 @@ def make_bar(value, lo, hi):
     return ''.join(bar)
 
 def yaw_label(v):
-    if v < -30:  return "← Left  "
-    if v >  30:  return "Right → "
+    if v < -30:  return "Right → "
+    if v >  30:  return "← Left  "
     return              " Center "
 
 def pitch_label(v):
@@ -77,7 +77,7 @@ def draw(y, p, r):
     print("║     AirPods Pro Head Tracking / ヘッドトラッキング ║")
     print("╠══════════════════════════════════════════════════╣")
     print(f"║  Yaw   (L/R 左右): {y:+7.1f}°  {yaw_label(y):<9}           ║")
-    print(f"║  [{make_bar(y, -90, 90)}]  ║")
+    print(f"║  [{make_bar(-y, -90, 90)}]  ║")
     print(f"║                                                  ║")
     print(f"║  Pitch (U/D 上下): {p:+7.1f}°  {pitch_label(p):<9}           ║")
     print(f"║  [{make_bar(p, -60, 60)}]  ║")
