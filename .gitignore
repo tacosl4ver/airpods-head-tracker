@@ -2,3 +2,4 @@ AirPodsGyroHelper.app/Contents/MacOS/airpods_gyro_bin
 __pycache__/
 *.pyc
 .DS_Store
+demo.mp4

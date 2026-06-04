@@ -2,6 +2,8 @@
 
 > Control your screen with your head — using AirPods Pro as a motion sensor on macOS.
 
+![demo](demo.gif)
+
 [English](#english) | [日本語](#japanese)
 
 ---
